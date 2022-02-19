@@ -80,9 +80,10 @@ async def main():
     stop = loop.create_future()
     loop.add_signal_handler(signal.SIGTERM, stop.set_result, None)
 
+    logger.info(f'Tring to connect to {config.WEBSOCKET_URL}')
     async for websocket in websockets.connect(config.WEBSOCKET_URL):
         try:
-            logger.info(f'Connecting to {config.WEBSOCKET_URL}')
+            logger.info('Connected.')
 
             # Get session list
             await websocket.send(
@@ -101,9 +102,13 @@ async def main():
                 await handle_tick(tick, websocket)
                 await spawn_bots(websocket)
 
-        except websockets.ConnectionClosed:
+        except websockets.ConnectionClosedError:
+            logger.error('Connection interrupted.')
+
+        finally:
+            logger.info('Connection closed.')
             CONNECTED_BOTS.clear()
-            logger.warning('Connection interrupted. Clearing CONNECTED_BOTS...')
+            logger.info(f'Tring to connect to {config.WEBSOCKET_URL}')
 
 
 if __name__ == '__main__':
