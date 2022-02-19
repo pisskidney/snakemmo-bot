@@ -101,7 +101,7 @@ async def main():
                 await spawn_bots(websocket)
 
         except websockets.ConnectionClosed:
-            ...
+            CONNECTED_BOTS.clear()
 
 
 if __name__ == '__main__':
