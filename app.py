@@ -80,9 +80,10 @@ async def main():
     stop = loop.create_future()
     loop.add_signal_handler(signal.SIGTERM, stop.set_result, None)
 
-    logger.info(f'Connecting to {config.WEBSOCKET_URL}')
     async for websocket in websockets.connect(config.WEBSOCKET_URL):
         try:
+            logger.info(f'Connecting to {config.WEBSOCKET_URL}')
+
             # Get session list
             await websocket.send(
                 json.dumps({
@@ -102,6 +103,7 @@ async def main():
 
         except websockets.ConnectionClosed:
             CONNECTED_BOTS.clear()
+            logger.warning('Connection interrupted. Clearing CONNECTED_BOTS...')
 
 
 if __name__ == '__main__':
